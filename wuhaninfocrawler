@@ -1,0 +1,50 @@
+import requests
+from bs4 import BeautifulSoup
+import logging
+from telegram import ParseMode
+import json
+from telegram.ext import Updater, Filters, MessageHandler, CommandHandler, run_async
+logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+                     level=logging.INFO)
+token = "662200493:AAFiK6HPoykChXojXsNkn_mNqIufIYciIL8"
+updater = Updater(token=token, use_context=True)
+dispatcher = updater.dispatcher
+
+@run_async
+def start(update,context):
+    text = "This bot is made by meow @catsdontlie"
+    context.bot.send_message(chat_id=update.effective_chat.id,text=text)
+
+@run_async
+def stats(update,context):
+    r = requests.get("https://storage.googleapis.com/the-wuhan-virus.appspot.com/cache/general_data.js?ignoreCache=1""https://storage.googleapis.com/the-wuhan-virus.appspot.com/cache/general_data.js?ignoreCache=1")
+    if r.status_code == 200:
+        soup = BeautifulSoup(r.content, 'lxml')
+        info = soup.text
+        info = info.split(',')
+        numbers = info[5:]
+        infected = numbers[0]
+        infected = format(int(infected[1:]),",")
+        deaths = format(int(numbers[1]),",")
+        recovered = format(int(numbers[3]),",")
+        text = f"<b>Infected:</b> <i>{infected}</i>\n<b>Deaths:</b> <i>{deaths}</i>\n<b>Recovered:</b> <code>{recovered}</code>"
+    else:
+        text = "<b>error occured please contact @catsdontlie</b>"
+    context.bot.send_message(chat_id=update.effective_chat.id, text=text, parse_mode=ParseMode.HTML)
+
+def Help(update, context):
+    text ="""List of commands:
+    /start <--starts the bot/-->
+    /stats <--sends info on stats/-->
+    /help <--sends a list of commands/-->
+    """
+    context.bot.send_message(chat_id=update.effective_chat.id,text=text)
+    
+start_handler = CommandHandler('start', start)
+stats_handler = CommandHandler('stats', stats)
+help_handler = CommandHandler('help', Help)
+dispatcher.add_handler(start_handler)
+dispatcher.add_handler(stats_handler)
+dispatcher.add_handler(help_handler)
+updater.start_polling()
+updater.idle()
