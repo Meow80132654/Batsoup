@@ -6,7 +6,7 @@ import json
 from telegram.ext import Updater, Filters, MessageHandler, CommandHandler, run_async
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                      level=logging.INFO)
-token = "662200493:AAFiK6HPoykChXojXsNkn_mNqIufIYciIL8"
+token = ""
 updater = Updater(token=token, use_context=True)
 dispatcher = updater.dispatcher
 
